@@ -1,4 +1,3 @@
-     
 import numpy
 def primesfrom3to(n):
     """ Returns a array of primes, 3 <= p < n """
