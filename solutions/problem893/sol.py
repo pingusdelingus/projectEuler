@@ -19,7 +19,7 @@ with open("1milPrimes", "r") as file:
 
 
 
-
+#! NEW IDEA! MAKE A DICT THAT HOLDS EACH CALCULATION OF repToMatches so for large values we can lookup and return them instead of calculating them.
 
 #! returns a list with all prime factors of num
 #! i.e for 28 would return [2,2,7]
