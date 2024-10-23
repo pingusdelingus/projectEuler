@@ -3,7 +3,8 @@ from functools import reduce
 from collections import Counter
 from itertools import product as itertools_product
 from math import prod
-
+from colorama import Fore, init
+init()
 '''
 we are given a number, and we want to find the min number of matchsticks needed to represent it.
 we can also use addition and multiplication to represent a number.
@@ -43,25 +44,25 @@ digitToMatches = {1 : 2, 2 : 5, 3 : 5, 4 : 4, 5 : 5, 6 : 6, 7 : 3, 8 : 7, 9 : 6,
 
 
 
-
 #! takes in a string and returns the number of matches needed to display that representation
 #! i.e. for "28" returns 12 since you need 5 matches for 2 and 7 matches for 8
-def eval(str1):
-    res = 1
-    str1 = str1.split("*")
-    for num in str1:
-        res *= int(num)
+def evaluate(str1):
+    if str1 == "":
+        return
+    str1= str(str1)
+    res = eval(str1)
     return res
 
 def repToMatches(str1):
-    ourSum = 0
+    numMatches = 0
     for char in str1:
+        num = ""
         if char == "*" or char == "+":
-            ourSum += digitToMatches[char]
+            numMatches += 2
         else:
             char = int(char)
-            ourSum += digitToMatches[char]
-    return ourSum
+            numMatches += digitToMatches[char]
+    return numMatches
 #given a list of prime factors, return a list of all possible representations as strings
 def findAllPossibilities(prime_factors, theNumber):
     
@@ -92,44 +93,64 @@ def findAllPossibilities(prime_factors, theNumber):
     result = [full_factorization] + sorted(result, key=lambda x: eval(x))
     ans = []
     for item in result:
-        if eval(item) == theNumber:
+        if evaluate(item) == theNumber:
             ans.append(item)
 
     return ans
 
-raw = "20"
-rawSum = repToMatches(raw)
+def findSumAndMults(factors,):
+    pass
 
-rawFactors = primeFactorization(raw)
-print(rawFactors)
-
-
-allPoss = findAllPossibilities(rawFactors, int(raw))
 def countMatchNums(allPoss):
 
     matches = []
     for poss in allPoss:
-        matches.append(repToMatches(poss))
+        matchNum = repToMatches(poss)
+        matches.append(matchNum)
     return matches
-# now that we have the raw sum, we must check all other representations of the num
 
+# now that we have the raw sum, we must check all other representations of the num
+def allSum(n, minMatchesOfAllP):
+    ans = []
+    for index in range(1, (n//2)+1):
+        string = f"{index}+{n-index}"
+        res = repToMatches(string)
+        if res > minMatchesOfAllP:
+            continue
+        else:
+            ans.append(res)
+    if len(ans) == 0:
+        return [minMatchesOfAllP]
+    else:
+        return ans
 def M(n):
     rawFacts = primeFactorization(n)
+   # print(f"this is all rawFacts {rawFacts}")
     allP = findAllPossibilities(rawFacts, n)
-    allMatchNums = countMatchNums(allP)
-    return min(allMatchNums)
+    matchesOfAllP = countMatchNums(allP)
+    minMatchesOfAllP = min(matchesOfAllP)
 
+   # print(f"this is allP : {allP}")
+    sums = allSum(n, minMatchesOfAllP)
+   # print(f"this is sums: {sums}")
+    if sums == None:
+       return minMatchesOfAllP
+    minSum = min(sums)
+    print(type(minSum))
+    print(type(minMatchesOfAllP))
+    minNum = min(minSum, minMatchesOfAllP)
+    return minNum 
 def T(n):
     sum = 0
     for index in range(1,n+1):
-        sum += M(n)
+        res = M(index)
+        sum += res
+        print(f"{Fore.RED} the value of M({index}) is : {res} {Fore.RESET}")
     return sum
 
 def main():
     usrInput = int(input("what num you want"))
-    ans = T(usrInput)
-    print(ans)
-
+    print(T(usrInput)) 
 main()
 
 
