@@ -1,4 +1,5 @@
 import itertools
+import math
 from functools import reduce
 from collections import Counter
 from itertools import product as itertools_product
@@ -54,15 +55,19 @@ def evaluate(str1):
     return res
 
 def repToMatches(str1):
-    numMatches = 0
-    for char in str1:
-        num = ""
-        if char == "*" or char == "+":
-            numMatches += 2
-        else:
-            char = int(char)
-            numMatches += digitToMatches[char]
-    return numMatches
+    seenReps = {}
+    if str1 in seenReps:
+        return seenReps[str1]
+    else:
+        numMatches = 0
+        for char in str1:
+            if char == "*" or char == "+":
+                numMatches += 2
+            else:
+                char = int(char)
+                numMatches += digitToMatches[char]
+        seenReps[str1] = numMatches
+        return numMatches
 #given a list of prime factors, return a list of all possible representations as strings
 def findAllPossibilities(prime_factors, theNumber):
     
@@ -112,10 +117,14 @@ def countMatchNums(allPoss):
 # now that we have the raw sum, we must check all other representations of the num
 def allSum(n, minMatchesOfAllP):
     ans = []
+    redudCount = 0
     for index in range(1, (n//2)+1):
+        if redudCount >= 1000:
+            break
         string = f"{index}+{n-index}"
         res = repToMatches(string)
-        if res > minMatchesOfAllP:
+        if res >= minMatchesOfAllP:
+            redudCount += 1
             continue
         else:
             ans.append(res)
@@ -136,17 +145,22 @@ def M(n):
     if sums == None:
        return minMatchesOfAllP
     minSum = min(sums)
-    print(type(minSum))
-    print(type(minMatchesOfAllP))
     minNum = min(minSum, minMatchesOfAllP)
     return minNum 
 def T(n):
     sum = 0
-    for index in range(1,n+1):
-        res = M(index)
-        sum += res
-        print(f"{Fore.RED} the value of M({index}) is : {res} {Fore.RESET}")
-    return sum
+    x = ""
+    with open("sol.txt", "a") as file:
+        
+        for index in range(1,n+1):
+            res = M(index)
+            sum += res
+            print(f"THE CURRENT SUM IS : {sum}")
+            x = f"{Fore.RED} the value of M({index}) is : {res} {Fore.RESET}"
+            print(x)
+            file.write(x + "\n")
+            del(res)
+        return sum
 
 def main():
     usrInput = int(input("what num you want"))
